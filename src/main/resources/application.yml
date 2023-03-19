@@ -11,16 +11,17 @@ spring:
       properties:
         hibernate:
           format_sql: true
+          dialect: org.hibernate.dialect.PostgreSQL10Dialect
       database: postgresql
-      database-platform: org.hibernate.dialect.PostgreSQLDialect
   session:
-    session:
-      store-type:
-        jdbc
+    store-type: jdbc
+    jdbc:
+      initialize-schema: always
 
 server:
-#  servlet:
-#    context-path: /api
+  servlet:
+    session:
+      timeout: 5m
   port: 8080
   tomcat:
     accesslog:
@@ -29,4 +30,3 @@ server:
     file-date-format: yyyy-mm-dd
     prefix: access_log
     suffix: .log
-

@@ -15,11 +15,30 @@
                 stompClient.subscribe('/topic/messages', function (message) {
                     showMessage(message.body);
                 });
+                stompClient.subscribe('/user/queue/messages', function (message) {
+                    showMessage(message.body);
+                });
+
             });
+
 
             document.getElementById('sendBtn').addEventListener('click', function () {
                 let messageInput = document.getElementById('messageInput');
-                stompClient.send("/app/send/message", {}, messageInput.value);
+                stompClient.send("/app/send/message", {}, JSON.stringify({
+                    message: messageInput.value,
+                }));
+                messageInput.value = '';
+            });
+
+            // Modify the send button event listener
+            document.getElementById('sendToUserBtn').addEventListener('click', function () {
+                let messageInput = document.getElementById('messageInput');
+                let sessionIdInput = document.getElementById('sessionIdInput');
+                // Pass the username as a second parameter
+                stompClient.send("/app/send/message-to-user", {}, JSON.stringify({
+                    message: messageInput.value,
+                    sessionId: sessionIdInput.value
+                }));
                 messageInput.value = '';
             });
 
@@ -33,8 +52,10 @@
 </head>
 <body>
 <h1>WebSocket Example</h1>
+<input type="text" id="sessionIdInput" placeholder="Type the recipient's session id...">
 <input type="text" id="messageInput" placeholder="Type your message...">
 <button id="sendBtn">Send</button>
+<button id="sendToUserBtn">Send to user</button>
 <ul id="messages"></ul>
 </body>
 </html>
