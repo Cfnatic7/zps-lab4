@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebSocket Example</title>
+  <script src="/webjars/sockjs-client/1.0.2/sockjs.min.js"></script>
+  <script src="/webjars/stomp-websocket/2.3.3/stomp.min.js"></script>
+  <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let socket = new SockJS('/websocket-endpoint');
+            let stompClient = Stomp.over(socket);
+
+            stompClient.connect({}, function (frame) {
+                console.log('Connected: ' + frame);
+
+                stompClient.subscribe('/topic/messages', function (message) {
+                    showMessage(message.body);
+                });
+            });
+
+            document.getElementById('sendBtn').addEventListener('click', function () {
+                let messageInput = document.getElementById('messageInput');
+                stompClient.send("/app/send/message", {}, messageInput.value);
+                messageInput.value = '';
+            });
+
+            function showMessage(message) {
+                let messageElement = document.createElement('li');
+                messageElement.textContent = message;
+                document.getElementById('messages').appendChild(messageElement);
+            }
+        });
+    </script>
+</head>
+<body>
+<h1>WebSocket Example</h1>
+<input type="text" id="messageInput" placeholder="Type your message...">
+<button id="sendBtn">Send</button>
+<ul id="messages"></ul>
+</body>
+</html>
