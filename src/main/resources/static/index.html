@@ -8,11 +8,17 @@
         document.addEventListener('DOMContentLoaded', function () {
             let socket = new SockJS('/websocket-endpoint');
             let stompClient = Stomp.over(socket);
+            let roomNumber = document.getElementById('chatroomInput').value;
+
 
             stompClient.connect({}, function (frame) {
                 console.log('Connected: ' + frame);
 
                 stompClient.subscribe('/topic/messages', function (message) {
+                    showMessage(message.body);
+                });
+
+                stompClient.subscribe(`/room/${roomNumber}/messages`, function (message) {
                     showMessage(message.body);
                 });
             });
@@ -33,6 +39,8 @@
 </head>
 <body>
 <h1>WebSocket Example</h1>
+<input type="text" id="usernameInput" placeholder="Type your username">
+<input type="number" id="chatroomInput" placeholder="Type your username">
 <input type="text" id="messageInput" placeholder="Type your message...">
 <button id="sendBtn">Send</button>
 <ul id="messages"></ul>
