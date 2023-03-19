@@ -3,6 +3,7 @@ package com.example.demo.controllers;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
@@ -24,15 +25,14 @@ public class ChatController {
     }
 
     @MessageMapping("/sendMessageToRoom")
-    public void sendMessageToRoom(ChatMessage chatMessage) {
+    public void sendMessageToRoom(@Payload ChatMessage chatMessage) {
         messagingTemplate.convertAndSend("/topic/rooms/" + chatMessage.getRoomId(),
                 chatMessage.getMessage());
     }
 
     @MessageMapping("/sendPrivateMessage")
-    public void sendPrivateMessage(PrivateMessage privateMessage) {
-        messagingTemplate.convertAndSendToUser(privateMessage.getReceiver(),
-                "/private",
+    public void sendPrivateMessage(@Payload PrivateMessage privateMessage) {
+        messagingTemplate.convertAndSend("/queue/user/" + privateMessage.getReceiver(),
                 privateMessage.getMessage());
     }
 
